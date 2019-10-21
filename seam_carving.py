@@ -78,7 +78,7 @@ if __name__ == "__main__":
     img = imread(img_path)
     E = calc_energy(img).astype(np.float32)
     rows, cols = E.shape
-    r_rows, r_cols = 800, 1000
+    r_rows, r_cols = _, _ # resizing size
 
     for i in range(cols-r_cols):
         print('i_x: {}/{}'.format(i+1, cols-r_cols))
