@@ -5,16 +5,12 @@ from skimage.io import imread, imsave
 from tqdm import tqdm
 from calc_energy import calc_energy
 
-def calc_M(E):
-    rows, cols = E.shape
-    M = np.array(E, copy=True)
-    for y in range(1, rows):
-        for x in range(cols):
-            t = M[y-1,x]
-            if x-1 >= 0:   t = min(t, M[y-1,x-1])
-            if x+1 < cols: t = min(t, M[y-1,x+1])
-            M[y,x] += t
-    return M
+try:
+    from c_calc_M import calc_M
+except ModuleNotFoundError:
+    print('Could not find compiled version')
+    print('import python script')
+    from calc_M import calc_M
 
 def backtrack_M(M):
     rows, cols = M.shape
@@ -39,7 +35,7 @@ def backtrack_M(M):
 def update(img, E, idx):
     rows, cols = E.shape
     u_img = np.zeros((rows, cols-1, 3), dtype=np.uint8)
-    u_E  = np.zeros((rows, cols-1))
+    u_E  = np.zeros((rows, cols-1), dtype=np.float32)
     for y in range(rows):
         if idx[y] == 0:
             u_img[y,:,:] = img[y,idx[y]+1:,:]
