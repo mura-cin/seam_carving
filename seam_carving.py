@@ -2,6 +2,7 @@ import os
 from time import time
 import numpy as np
 from skimage.io import imread, imsave
+from tqdm import tqdm
 from calc_energy import calc_energy
 
 def calc_M(E):
@@ -80,15 +81,13 @@ if __name__ == "__main__":
     rows, cols = E.shape
     r_rows, r_cols = _, _ # resizing size
 
-    for i in range(cols-r_cols):
-        print('i_x: {}/{}'.format(i+1, cols-r_cols))
-        img, E = seam_carving(img, E, disp_time=True)
+    for i in tqdm(range(cols-r_cols), desc='col-loop'):
+        img, E = seam_carving(img, E)
     
     img = img.transpose(1, 0, 2)
     E = E.transpose()
-    for i in range(rows-r_rows):
-        print('i_y: {}/{}'.format(i+1, rows-r_rows))
-        img, E = seam_carving(img, E, disp_time=True)
+    for i in tqdm(range(rows-r_rows), desc='row-loop'):
+        img, E = seam_carving(img, E)
     img = img.transpose(1, 0, 2)
     
     base_path, img_name = os.path.split(img_path)
