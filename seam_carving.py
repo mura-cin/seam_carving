@@ -1,4 +1,5 @@
 import os
+import sys
 from time import time
 import numpy as np
 from skimage.io import imread, imsave
@@ -70,12 +71,19 @@ def seam_carving(img, E, disp_time=False):
 
     return u
 
+# python seam_carving.py [img_path] [r_width] [r_height]
 if __name__ == "__main__":
-    img_path = 'path/to/img'
+    args = sys.argv
+    if len(args) != 4 or not str.isdecimal(args[2]) or not str.isdecimal(args[3]):
+        print('Usage: python seam_carving.py [img_path] [r_width] [r_height]')
+        exit(-1)
+    
+    img_path = args[1]
     img = imread(img_path)
     E = calc_energy(img).astype(np.float32)
     rows, cols = E.shape
-    r_rows, r_cols = _, _ # resizing size
+    r_cols, r_rows = int(args[2]), int(args[3]) # resizing size
+    print('orig_size: {}, resized: {}'.format(E.shape, (r_rows, r_cols)))
 
     for i in tqdm(range(cols-r_cols), desc='col-loop'):
         img, E = seam_carving(img, E)
@@ -88,4 +96,4 @@ if __name__ == "__main__":
     
     base_path, img_name = os.path.split(img_path)
     name, ext = os.path.splitext(img_name)
-    imsave(os.path.join(base_path, name+'_resized'+ext), img)
+    imsave(os.path.join(base_path, name+'_{}x{}'.format(r_cols, r_rows)+ext), img)
